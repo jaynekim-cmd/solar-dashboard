@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Solar Dashboard</title>
+  <style>
+    /* ── Reset & base ─────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  background: #f0f4f8;
+  color: #1a2e45;
+  min-height: 100vh;
+  padding: 2rem 1rem;
+}
+
+/* ── Page container ───────────────────────────────────── */
+.page {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+/* ── Header ───────────────────────────────────────────── */
+header {
+  margin-bottom: 1.5rem;
+}
+
+h1 {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #1a2e45;
+}
+
+.subtitle {
+  color: #5a7a99;
+  font-size: 0.9rem;
+  margin-top: 4px;
+}
+
+/* ── Inputs card ──────────────────────────────────────── */
+.inputs-card {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+}
+
+.field label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #5a7a99;
+  margin-bottom: 6px;
+}
+
+.field select,
+.field input[type="number"] {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #d0dce8;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  color: #1a2e45;
+  background: #f8fafc;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.field select:focus,
+.field input[type="number"]:focus {
+  border-color: #f5a623;
+}
+
+.error {
+  color: #e05252;
+  font-size: 0.75rem;
+  margin-top: 5px;
+  min-height: 16px;
+}
+
+/* ── Metric cards ─────────────────────────────────────── */
+.metrics {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 1.5rem;
+}
+
+.metric {
+  background: white;
+  border-radius: 12px;
+  padding: 1rem;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+}
+
+.metric-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #5a7a99;
+  margin-bottom: 4px;
+}
+
+.metric-value {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #1a2e45;
+}
+
+.metric-sub {
+  font-size: 0.7rem;
+  color: #8aaac8;
+  margin-top: 3px;
+}
+
+/* ── Table ────────────────────────────────────────────── */
+.table-title {
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #5a7a99;
+  margin-bottom: 8px;
+}
+
+.table-wrap {
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.82rem;
+}
+
+thead tr {
+  background: #f8fafc;
+}
+
+th {
+  padding: 11px 14px;
+  text-align: right;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #5a7a99;
+  border-bottom: 1px solid #e8f0f7;
+}
+
+th:first-child { text-align: left; }
+
+td {
+  padding: 9px 14px;
+  text-align: right;
+  border-bottom: 1px solid #f0f4f8;
+  color: #3a5a7a;
+}
+
+td:first-child {
+  text-align: left;
+  font-weight: 600;
+  color: #1a2e45;
+}
+
+tbody tr:last-child td { border-bottom: none; }
+tbody tr:hover td { background: #f8fafc; }
+
+/* ── Positive / negative colors ───────────────────────── */
+.pos { color: #2d9b6f !important; }
+.neg { color: #e05252 !important; }
+
+/* ── Header top row ───────────────────────────────────── */
+.header-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+
+/* ── Theme toggle button ──────────────────────────────── */
+#theme-toggle {
+  background: white;
+  border: 1px solid #d0dce8;
+  border-radius: 8px;
+  padding: 6px 14px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #5a7a99;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+#theme-toggle:hover {
+  background: #f0f4f8;
+}
+
+/* ── Dark mode overrides ──────────────────────────────── */
+body.dark {
+  background: #0f1a26;
+  color: #e0eaf5;
+}
+
+body.dark .inputs-card,
+body.dark .metric,
+body.dark .table-wrap {
+  background: #1a2e45;
+  box-shadow: none;
+}
+
+body.dark h1 {
+  color: #e0eaf5;
+}
+
+body.dark .field select,
+body.dark .field input[type="number"] {
+  background: #0f1a26;
+  border-color: #2c4a6e;
+  color: #e0eaf5;
+}
+
+body.dark .field select:focus,
+body.dark .field input[type="number"]:focus {
+  border-color: #f5a623;
+}
+
+body.dark th {
+  background: #162236;
+  color: #8aaac8;
+  border-bottom-color: #2c4a6e;
+}
+
+body.dark td {
+  color: #a0bcd8;
+  border-bottom-color: #1a2e45;
+}
+
+body.dark td:first-child {
+  color: #e0eaf5;
+}
+
+body.dark tbody tr:hover td {
+  background: #1f3550;
+}
+
+body.dark .metric-value {
+  color: #e0eaf5;
+}
+
+body.dark #theme-toggle {
+  background: #1a2e45;
+  border-color: #2c4a6e;
+  color: #8aaac8;
+}
+
+body.dark #theme-toggle:hover {
+  background: #1f3550;
+}
+
+body.dark thead tr {
+  background: #162236;
+}
+  </style>
+</head>
+<body>
+
+  <div class="page">
+
+  <header>
+  <div class="header-top">
+    <h1>Solar Dashboard</h1>
+    <button id="theme-toggle">🌙 Dark mode</button>
+  </div>
+  <p class="subtitle">Enter your details to see a 25-year solar project forecast</p>
+  </header>
+
+  <div class="inputs-card">
+    <div class="field">
+      <label for="state">State</label>
+      <select id="state">
+        <option value="">— select a state —</option>
+      </select>
+    </div>
+    <div class="field">
+      <label for="size">System size (kW DC)</label>
+      <input type="number" id="size" min="0.1" step="0.5" placeholder="e.g. 10" />
+      <p class="error" id="size-error"></p>
+    </div>
+  </div>
+
+  <!-- metrics and table go here in the next parts -->
+  <div id="results" style="display:none;">
+
+    <div class="metrics">
+      <div class="metric">
+        <p class="metric-label">Upfront cost</p>
+        <p class="metric-value" id="m-cost">—</p>
+        <p class="metric-sub">before ITC credit</p>
+      </div>
+      <div class="metric">
+        <p class="metric-label">Annual generation</p>
+        <p class="metric-value" id="m-gen">—</p>
+        <p class="metric-sub">kWh per year</p>
+      </div>
+      <div class="metric">
+        <p class="metric-label">Project IRR</p>
+        <p class="metric-value" id="m-irr">—</p>
+        <p class="metric-sub">25-year return</p>
+      </div>
+      <div class="metric">
+        <p class="metric-label">Payback period</p>
+        <p class="metric-value" id="m-pb">—</p>
+        <p class="metric-sub">years to break even</p>
+      </div>
+    </div>
+
+    <h2 class="table-title">25-year cash flow</h2>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Year</th>
+            <th>Revenue</th>
+            <th>O&M cost</th>
+            <th>ITC credit</th>
+            <th>Net cash flow</th>
+            <th>Cumulative</th>
+          </tr>
+        </thead>
+        <tbody id="cf-body"></tbody>
+      </table>
+    </div>
+
+  </div>
+
+</div>
+
+<script src="script.js"></script>
+
+</body>
+</html>
