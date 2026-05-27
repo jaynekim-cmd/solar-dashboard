@@ -18,12 +18,14 @@ jobs:
 
       - name: Install dependencies
         run: npm install
+        working-directory: solar-dashboard-react
 
       - name: Build
         run: npm run build
+        working-directory: solar-dashboard-react
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./dist
+          publish_dir: ./solar-dashboard-react/dist
