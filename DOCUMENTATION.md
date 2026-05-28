@@ -53,12 +53,12 @@ external dependencies beyond React itself.
 | Entry point | main.jsx | Mounts the React app, no logic |
 
 ### Why React over vanilla JS
-The brief preferred React. Using React also gives clear separation
+Using React gives a clear separation
 between the financial model (finance.js) and the UI (App.jsx),
 making the code easier to read and maintain.
 
 ### Why Vite
-Vite is the modern standard for React projects — fast dev server,
+Vite is the modern standard for React projects which provides fast dev server,
 clean builds, and simple GitHub Pages deployment.
 
 ### Electricity rates
